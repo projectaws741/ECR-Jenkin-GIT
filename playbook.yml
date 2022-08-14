@@ -1,8 +1,9 @@
-- name: pulling and deploying
+---
+- name: pulling image
   hosts: QASERVER
   tasks:
    - name: pulling image
-     docker_image:
-      name: 902873483008.dkr.ecr.us-east-1.amazonaws.com/demo:latest
+     command: docker pull krishna1654/http1
    - name: running image
-     command: "docker run --name v1 -d -p 8010:80 902873483008.dkr.ecr.us-east-1.amazonaws.com/demo:latest"
+     command: docker run --name v1 -d -p 8010:80 krishna1654/http1
+...
