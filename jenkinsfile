@@ -1,0 +1,52 @@
+pipeline
+{
+    agent any
+    environment
+    {
+        registry = "902873483008.dkr.ecr.us-east-1.amazonaws.com/demo"
+    }
+    stages
+    {
+        stage('SCM')
+        {
+            steps
+            {
+                git branch: 'main', url: 'https://github.com/projectaws741/ECR-Jenkin-GIT.git'
+            }
+        }
+        stage('Docker build')
+        {
+            steps
+            {
+                script
+                {
+                    dockerImage = docker.build registry
+                }
+            }
+        }
+        stage('Docker push')
+        {
+            steps
+            {
+                script
+                {
+                    sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 902873483008.dkr.ecr.us-east-1.amazonaws.com'
+                    sh 'docker push 902873483008.dkr.ecr.us-east-1.amazonaws.com/demo:latest'
+                }
+            }
+        }
+        stage('Testing image')
+        {
+            steps
+            {
+                script
+                {
+                    sh '''ssh ubuntu@172.31.31.156
+                    aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 902873483008.dkr.ecr.us-east-1.amazonaws.com
+                    docker pull 902873483008.dkr.ecr.us-east-1.amazonaws.com/demo:latest
+                    docker run --name v1 -d -p 8020:80 902873483008.dkr.ecr.us-east-1.amazonaws.com/demo:latest'''
+                }
+            }
+        }
+    }
+}
