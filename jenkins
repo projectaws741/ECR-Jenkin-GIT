@@ -1,0 +1,31 @@
+pipeline
+{
+    agent any
+    stages
+    {
+        stage('SCM')
+        {
+            steps
+            {
+                git branch: 'main', url: 'https://github.com/projectaws741/ECR-Jenkin-GIT.git'
+            }
+        }
+        stage('Building Docker')
+        {
+            steps
+            {
+                sh '''docker login -u krishna1654 -p Kittu@123
+                      docker build -t krishna1654/http2 .
+                      docker push krishna1654/http2'''
+            }
+        }
+        stage('Deploying to kubernetes')
+        {
+            steps
+            {
+                
+                sh 'kubectl apply -f deployment.yml'
+            }
+        }
+    }
+}
